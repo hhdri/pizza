@@ -1,0 +1,11 @@
+#canvas {
+    border-radius: 50%;
+}
+#canvas_wrapper {
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background-image:url('pizza.png');
+    background-size:cover;
+    margin:auto;
+}
