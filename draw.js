@@ -1,4 +1,4 @@
-var canvas, radius, ctx, centerX, centerY, ratio;
+var canvas, radius, ctx, centerX, centerY, ratio, numberOfSlices;
 $(document).ready(function() {
     canvas = document.getElementById("canvas");
     radius = Math.floor(Math.min(canvas.width, canvas.height)/2);
@@ -6,6 +6,11 @@ $(document).ready(function() {
     centerX = Math.floor(canvas.width/2);
     centerY = Math.floor(canvas.height/2);
     ratio = 5/4;
+    numberOfSlices = $('#slices').val();
+    $('#slices').on('input', function() {
+        numberOfSlices = $(this).val();
+        reDrawSlices();
+    });
 });
 function drawCircle() {
     ctx.beginPath();
@@ -52,7 +57,7 @@ function calcNewRatio(x, y) {
 function draw() {
     drawCenter();
     drawBaseLine();
-    var degg = getDegreesArray(ratio, 7);
+    var degg = getDegreesArray(ratio, numberOfSlices);
     degg.forEach(function(x) {
         lineAtAngle(x);
         lineAtAngle(-x);
@@ -61,6 +66,11 @@ function draw() {
 
 function reDraw(posX, posY) {
     calcNewRatio(posX, posY);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    draw();
+}
+
+function reDrawSlices(posX, posY) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw();
 }

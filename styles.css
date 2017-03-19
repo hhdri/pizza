@@ -9,3 +9,8 @@
     background-size:cover;
     margin:auto;
 }
+.slices_wrapper {
+    margin: auto;
+    text-align: center;
+    padding-top: 20px;
+}
