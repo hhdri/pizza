@@ -55,7 +55,6 @@ function calcNewRatio(x, y) {
 }
 
 function draw() {
-    drawCenter();
     drawBaseLine();
     var degg = getDegreesArray(ratio, numberOfSlices);
     degg.forEach(function(x) {
