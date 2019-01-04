@@ -31,13 +31,23 @@ function drawBaseLine() {
     ctx.lineTo(centerX, baseLength);
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(centerX, baseLength, radius/50, 0, 2 * Math.PI);
+    if(ratio != -1) {
+        ctx.arc(centerX, baseLength, radius/50, 0, 2 * Math.PI);
+    }
+    else {
+        ctx.arc(centerX, centerY, radius/50, 0, 2 * Math.PI);
+    }
     ctx.fill();
 }
 
 function lineAtAngle(angle) {
     angle -= Math.PI/2;
-    baseLength = radius / ratio + radius;
+    if(ratio != -1) {
+        baseLength = radius / ratio + radius;
+    }
+    else {
+        baseLength = radius;
+    }
     ctx.moveTo(centerX, baseLength);
     ctx.lineTo(centerX + 2 * radius * Math.cos(angle), baseLength + 2 * radius * Math.sin(angle));
     ctx.stroke();
@@ -51,12 +61,25 @@ function drawPoint(x, y) {
 
 function calcNewRatio(x, y) {
     dist = Math.sqrt((x - centerX)**2 + (y - centerY)**2);
-    ratio = radius / dist;
+    if(dist != 0) {
+        ratio = radius / dist;
+    }
+    else {
+        ratio = -1;
+    }
 }
 
 function draw() {
     drawBaseLine();
-    var degg = getDegreesArray(ratio, numberOfSlices);
+    if(ratio != -1) {
+        var degg = getDegreesArray(ratio, numberOfSlices);
+    }
+    else {
+        var degg = [];
+        for(i=0; i<= numberOfSlices; i++) {
+            degg.push(2 * Math.PI / numberOfSlices * (i + 1));
+        }
+    }
     degg.forEach(function(x) {
         lineAtAngle(x);
         lineAtAngle(-x);

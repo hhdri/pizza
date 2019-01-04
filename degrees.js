@@ -1,4 +1,3 @@
-//TODO:Make a statement for dividing from center.
 function sineEquation(ratio, k, theta, n) {
     return Math.sin(theta) - ratio * (n*2*Math.PI/k - theta);
 }
