@@ -1,17 +1,21 @@
 var canvas, radius, ctx, centerX, centerY, ratio, numberOfSlices;
-$(document).ready(function () {
+
+document.addEventListener("DOMContentLoaded", function () {
     canvas = document.getElementById("canvas");
     radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
     ctx = canvas.getContext("2d");
     centerX = Math.floor(canvas.width / 2);
     centerY = Math.floor(canvas.height / 2);
     ratio = 5 / 4;
-    numberOfSlices = $('#slices').val();
-    $('#slices').on('input', function () {
-        numberOfSlices = $(this).val();
+
+    numberOfSlices = document.getElementById("slices").value;
+
+    document.getElementById("slices").addEventListener("input", function () {
+        numberOfSlices = this.value;
         reDrawSlices();
     });
 });
+
 
 function drawBaseLine() {
     baseLength = radius / ratio + radius;
@@ -94,17 +98,29 @@ function calcTransformDegree(x, y) {
     return -(Math.PI - Math.acos(cosine));
 }
 
-$(document).ready(function (e) {
+document.addEventListener("DOMContentLoaded", function () {
     draw();
-    $('#canvas_wrapper').mousemove(function (e) {
-        var posX = e.pageX - $(this).offset().left, posY = e.pageY - $(this).offset().top;
-        if (distance(posX, posY, centerX, centerY) < radius / 50)
-            posX = centerX, posY = centerY;
-        trans = calcTransformDegree(posX, posY) * 180 / Math.PI;
+
+    const canvasWrapper = document.getElementById("canvas_wrapper");
+    const canvas = document.getElementById("canvas");
+
+    canvasWrapper.addEventListener("mousemove", function (e) {
+        const rect = canvasWrapper.getBoundingClientRect();
+        let posX = e.clientX - rect.left;
+        let posY = e.clientY - rect.top;
+
+        if (distance(posX, posY, centerX, centerY) < radius / 50) {
+            posX = centerX;
+            posY = centerY;
+        }
+
+        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
         reDraw(posX, posY);
-        $('#canvas').css({ 'transform': 'rotate(' + trans + 'deg)' });
+
+        canvas.style.transform = `rotate(${trans}deg)`;
     });
 });
+
 
 function sineEquation(ratio, k, theta, n) {
     return Math.sin(theta) - ratio * (n * 2 * Math.PI / k - theta);
