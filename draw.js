@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx = canvas.getContext("2d");
     centerX = Math.floor(canvas.width / 2);
     centerY = Math.floor(canvas.height / 2);
-    ratio = 5 / 4;
+    ratio = 4 / 5;
 
     numberOfSlices = document.getElementById("slices").value;
 
@@ -19,13 +19,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function drawBaseLine() {
-    baseLength = radius / ratio + radius;
+    baseLength = radius * ratio + radius;
     ctx.beginPath();
     ctx.moveTo(centerX, 0);
     ctx.lineTo(centerX, baseLength);
     ctx.stroke();
     ctx.beginPath();
-    if (ratio != -1) {
+    if (ratio != 0) {
         ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
     }
     else {
@@ -36,12 +36,7 @@ function drawBaseLine() {
 
 function lineAtAngle(angle) {
     angle -= Math.PI / 2;
-    if (ratio != -1) {
-        baseLength = radius / ratio + radius;
-    }
-    else {
-        baseLength = radius;
-    }
+    baseLength = radius * ratio + radius;
     ctx.moveTo(centerX, baseLength);
     ctx.lineTo(centerX + 2 * radius * Math.cos(angle), baseLength + 2 * radius * Math.sin(angle));
     ctx.stroke();
@@ -49,25 +44,12 @@ function lineAtAngle(angle) {
 
 function calcNewRatio(x, y) {
     dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-    if (dist != 0) {
-        ratio = radius / dist;
-    }
-    else {
-        ratio = -1;
-    }
+    ratio = dist / radius;
 }
 
 function draw() {
     drawBaseLine();
-    if (ratio != -1) {
-        var degg = [...Array(Math.floor(numberOfSlices / 2) + 1).keys()].map((i) => solve(i / numberOfSlices, 1 / ratio));
-    }
-    else {
-        var degg = [];
-        for (i = 0; i <= numberOfSlices; i++) {
-            degg.push(2 * Math.PI / numberOfSlices * (i + 1));
-        }
-    }
+    var degg = [...Array(Math.floor(numberOfSlices / 2) + 1).keys()].map((i) => solve(i / numberOfSlices, ratio));
     degg.forEach(function (x) {
         lineAtAngle(x);
         lineAtAngle(-x);
@@ -80,8 +62,8 @@ function distance(x1, y1, x2, y2) {
 
 function calcTransformDegree(x, y) {
     h = distance(x, y, centerX, centerY);
-    o = distance(x, y, centerX, centerY + radius / ratio);
-    f = radius / ratio;
+    o = distance(x, y, centerX, centerY + radius * ratio);
+    f = radius * ratio;
     cosine = (o ** 2 - h ** 2 - f ** 2) / (2 * h * f);
     if (x <= centerX)
         return Math.PI - Math.acos(cosine);
