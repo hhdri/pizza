@@ -25,12 +25,7 @@ function drawBaseLine() {
     ctx.lineTo(centerX, baseLength);
     ctx.stroke();
     ctx.beginPath();
-    if (ratio != 0) {
-        ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
-    }
-    else {
-        ctx.arc(centerX, centerY, radius / 50, 0, 2 * Math.PI);
-    }
+    ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -42,18 +37,13 @@ function lineAtAngle(angle) {
     ctx.stroke();
 }
 
-function calcNewRatio(x, y) {
-    dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-    ratio = dist / radius;
-}
-
 function draw() {
     drawBaseLine();
-    var degg = [...Array(Math.floor(numberOfSlices / 2) + 1).keys()].map((i) => solve(i / numberOfSlices, ratio));
-    degg.forEach(function (x) {
+    for (let i = 0; i <= Math.floor(numberOfSlices / 2); i++) {
+        const x = solve(i / numberOfSlices, ratio);
         lineAtAngle(x);
         lineAtAngle(-x);
-    });
+    }
 }
 
 function distance(x1, y1, x2, y2) {
@@ -86,7 +76,8 @@ document.addEventListener("DOMContentLoaded", function () {
             posY = centerY;
         }
 
-        calcNewRatio(posX, posY);
+        ratio = distance(posX, posY, centerX, centerY) / radius;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         draw();
 
