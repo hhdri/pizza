@@ -1,7 +1,7 @@
-var canvas, radius, ctx, centerX, centerY, ratio, numberOfSlices;
+var radius, ctx, centerX, centerY, ratio, numberOfSlices;
 
 document.addEventListener("DOMContentLoaded", function () {
-    canvas = document.getElementById("canvas");
+    const canvas = document.getElementById("canvas");
     const canvasWrapper = document.getElementById("canvas_wrapper");
     radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
     ctx = canvas.getContext("2d");
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("slices").addEventListener("input", function () {
         numberOfSlices = this.value;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         draw();
     });
 
@@ -24,14 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
         let posX = e.clientX - rect.left;
         let posY = e.clientY - rect.top;
 
-        if (distance(posX, posY, centerX, centerY) < radius / 50) {
-            posX = centerX;
-            posY = centerY;
-        }
-
         ratio = distance(posX, posY, centerX, centerY) / radius;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         draw();
 
         const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
@@ -60,6 +53,7 @@ function lineAtAngle(angle) {
 }
 
 function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBaseLine();
     for (let i = 0; i < numberOfSlices / 2; i++) {
         const x = solve(i / numberOfSlices, ratio);
