@@ -42,21 +42,21 @@ function drawLine(ctx, x1, y1, dx, dy) {
 }
 
 function draw(ctx) {
-    baseLength = radius * (1 + ratio);
+    centerYPrime = radius * (1 + ratio);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    drawLine(ctx, centerX, 0, 0, baseLength);
+    drawLine(ctx, centerX, 0, 0, centerYPrime);
     ctx.beginPath();
-    ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
+    ctx.arc(centerX, centerYPrime, radius / 50, 0, 2 * Math.PI);
     ctx.fill();
     for (let i = 0; i < numberOfSlices / 2; i++) {
         const x = solve(i / numberOfSlices, ratio);
-        drawLine(ctx, centerX, baseLength, +2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
-        drawLine(ctx, centerX, baseLength, -2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+        drawLine(ctx, centerX, centerYPrime, +2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+        drawLine(ctx, centerX, centerYPrime, -2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
     }
     if (numberOfSlices % 2 == 0)
-        drawLine(ctx, centerX, baseLength, 0, 2 * radius);
+        drawLine(ctx, centerX, centerYPrime, 0, 2 * radius);
 }
 
 function relAreaFraction(alpha, v) {
