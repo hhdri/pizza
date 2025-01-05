@@ -1,4 +1,4 @@
-var radius, centerX, centerY, ratio, numberOfSlices;
+let radius, centerX, centerY, ratio, numberOfSlices;
 
 document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("canvas");
@@ -26,9 +26,10 @@ document.addEventListener("DOMContentLoaded", function () {
         ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
 
         cosine = (centerY - posY) / Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2);
-        const mult = posX <= centerX ? 1 : -1;
-        trans = (Math.PI - Math.acos(cosine)) * mult * 180 / Math.PI;
-        canvas.style.transform = `rotate(${trans}deg)`;
+        trans = (Math.PI - Math.acos(cosine));
+        if (posX > centerX)
+            trans *= -1
+        canvas.style.transform = `rotate(${trans}rad)`;
 
         draw(ctx);
     });
@@ -78,10 +79,6 @@ function relAreaFractionDiff(alpha, v) {
 }
 
 function solve(funcVal, v) {
-    if (funcVal >= 0.5) {
-        throw new Error("funcVal must be < 0.5");
-    }
-
     let alpha = funcVal * 2 * Math.PI;
     while (true) {
         const funcValCur = relAreaFraction(alpha, v);
