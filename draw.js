@@ -25,7 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
 
-        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
+        cosine = (centerY - posY) / Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2);
+        const mult = posX <= centerX ? 1 : -1;
+        trans = (Math.PI - Math.acos(cosine)) * mult * 180 / Math.PI;
         canvas.style.transform = `rotate(${trans}deg)`;
 
         draw();
@@ -58,13 +60,6 @@ function draw() {
         ctx.lineTo(centerX, baseLength + 2 * radius);
         ctx.stroke();
     }
-}
-
-function calcTransformDegree(x, y) {
-    cosine = (centerY - y) / Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-    if (x <= centerX)
-        return Math.PI - Math.acos(cosine);
-    return -(Math.PI - Math.acos(cosine));
 }
 
 function relAreaFraction(alpha, v) {
