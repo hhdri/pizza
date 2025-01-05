@@ -2,7 +2,6 @@ let radius, centerX, centerY, ratio, numberOfSlices;
 
 document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("canvas");
-    const canvasWrapper = document.getElementById("canvas_wrapper");
     const ctx = canvas.getContext("2d");
 
     radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
@@ -18,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
         draw(ctx);
     });
 
-    canvasWrapper.addEventListener("mousemove", function (e) {
-        const rect = canvasWrapper.getBoundingClientRect();
+    document.getElementById("canvas_wrapper").addEventListener("mousemove", function (e) {
+        const rect = this.getBoundingClientRect();
         let posX = e.clientX - rect.left;
         let posY = e.clientY - rect.top;
 
