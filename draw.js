@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("slices").addEventListener("input", function () {
         numberOfSlices = this.value;
-        reDrawSlices();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw();
     });
 });
 
@@ -59,7 +60,7 @@ function calcNewRatio(x, y) {
 function draw() {
     drawBaseLine();
     if (ratio != -1) {
-        var degg = [...Array(Math.floor(numberOfSlices/2)+1).keys()].map((i) => solve(i / numberOfSlices, 1 / ratio));
+        var degg = [...Array(Math.floor(numberOfSlices / 2) + 1).keys()].map((i) => solve(i / numberOfSlices, 1 / ratio));
     }
     else {
         var degg = [];
@@ -71,17 +72,6 @@ function draw() {
         lineAtAngle(x);
         lineAtAngle(-x);
     });
-}
-
-function reDraw(posX, posY) {
-    calcNewRatio(posX, posY);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    draw();
-}
-
-function reDrawSlices(posX, posY) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    draw();
 }
 
 function distance(x1, y1, x2, y2) {
@@ -114,30 +104,30 @@ document.addEventListener("DOMContentLoaded", function () {
             posY = centerY;
         }
 
-        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
-        reDraw(posX, posY);
+        calcNewRatio(posX, posY);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw();
 
+        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
         canvas.style.transform = `rotate(${trans}deg)`;
     });
 });
-
-
-
-
 
 function relAreaFraction(alpha, v) {
     const term1 = alpha + Math.asin(v * Math.sin(alpha));
     const numerator = v * Math.sin(term1) + term1;
     return numerator / (2 * Math.PI);
 }
+
 function relAreaFractionDiff(alpha, v) {
     const term1 = v * Math.sin(alpha);
     const term2 = Math.sqrt(1 - term1 * term1);
     const numerator =
-      (term2 + v * Math.cos(alpha)) *
-      (1 + v * Math.cos(alpha + Math.asin(term1)));
+        (term2 + v * Math.cos(alpha)) *
+        (1 + v * Math.cos(alpha + Math.asin(term1)));
     return numerator / (2 * Math.PI * term2);
 }
+
 function solve(funcVal, v) {
     if (funcVal == 0.5) {
         return Math.PI;
@@ -145,12 +135,12 @@ function solve(funcVal, v) {
     if (funcVal > 0.5) {
         throw new Error("funcVal must be < 0.5");
     }
-  
+
     let alpha = funcVal * 2 * Math.PI;
     while (true) {
         const funcValCur = relAreaFraction(alpha, v);
         if (Math.abs(funcVal - funcValCur) < 1e-4) {
-        break;
+            break;
         }
         const grad = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v);
         alpha += Math.min(
@@ -160,11 +150,3 @@ function solve(funcVal, v) {
     }
     return alpha;
 }
-  
-  
-
-
-
-
-
-
