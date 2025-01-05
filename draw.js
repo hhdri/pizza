@@ -25,16 +25,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ratio = distance(posX, posY, centerX, centerY) / radius;
 
-        draw();
-
         const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
         canvas.style.transform = `rotate(${trans}deg)`;
+
+        draw();
     });
 });
 
-
-function drawBaseLine() {
+function draw() {
     baseLength = radius * ratio + radius;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.moveTo(centerX, 0);
     ctx.lineTo(centerX, baseLength);
@@ -42,26 +43,21 @@ function drawBaseLine() {
     ctx.beginPath();
     ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
     ctx.fill();
-}
-
-function lineAtAngle(angle) {
-    angle -= Math.PI / 2;
-    baseLength = radius * ratio + radius;
-    ctx.moveTo(centerX, baseLength);
-    ctx.lineTo(centerX + 2 * radius * Math.cos(angle), baseLength + 2 * radius * Math.sin(angle));
-    ctx.stroke();
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBaseLine();
     for (let i = 0; i < numberOfSlices / 2; i++) {
         const x = solve(i / numberOfSlices, ratio);
-        lineAtAngle(x);
-        lineAtAngle(-x);
+        ctx.moveTo(centerX, baseLength);
+        ctx.lineTo(centerX + 2 * radius * Math.sin(x), baseLength - 2 * radius * Math.cos(x));
+        ctx.stroke();
+
+        ctx.moveTo(centerX, baseLength);
+        ctx.lineTo(centerX - 2 * radius * Math.sin(x), baseLength - 2 * radius * Math.cos(x));
+        ctx.stroke();
     }
-    if (numberOfSlices % 2 == 0)
-        lineAtAngle(Math.PI);
+    if (numberOfSlices % 2 == 0) {
+        ctx.moveTo(centerX, baseLength);
+        ctx.lineTo(centerX, baseLength + 2 * radius);
+        ctx.stroke();
+    }
 }
 
 function distance(x1, y1, x2, y2) {
@@ -104,11 +100,12 @@ function solve(funcVal, v) {
         if (Math.abs(funcVal - funcValCur) < 1e-4) {
             break;
         }
-        const grad = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v);
-        alpha += Math.min(
-            Math.abs(alpha / 2),
-            Math.max(grad, -Math.abs(alpha / 2))
-        );
+        let step = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v)
+
+        step = Math.max(step, -Math.abs(alpha / 2));
+        step = Math.min(step, Math.abs(alpha / 2));
+
+        alpha += step;
     }
     return alpha;
 }
