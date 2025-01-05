@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let posX = e.clientX - rect.left;
         let posY = e.clientY - rect.top;
 
-        ratio = distance(posX, posY, centerX, centerY) / radius;
+        ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
 
         const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
         canvas.style.transform = `rotate(${trans}deg)`;
@@ -58,10 +58,6 @@ function draw() {
         ctx.lineTo(centerX, baseLength + 2 * radius);
         ctx.stroke();
     }
-}
-
-function distance(x1, y1, x2, y2) {
-    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
 }
 
 function calcTransformDegree(x, y) {
