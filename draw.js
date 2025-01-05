@@ -65,10 +65,7 @@ function distance(x1, y1, x2, y2) {
 }
 
 function calcTransformDegree(x, y) {
-    h = distance(x, y, centerX, centerY);
-    o = distance(x, y, centerX, centerY + radius * ratio);
-    f = radius * ratio;
-    cosine = (o ** 2 - h ** 2 - f ** 2) / (2 * h * f);
+    cosine = (centerY - y) / Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
     if (x <= centerX)
         return Math.PI - Math.acos(cosine);
     return -(Math.PI - Math.acos(cosine));
