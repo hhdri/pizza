@@ -1,21 +1,21 @@
-var radius, ctx, centerX, centerY, ratio, numberOfSlices;
+var radius, centerX, centerY, ratio, numberOfSlices;
 
 document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("canvas");
     const canvasWrapper = document.getElementById("canvas_wrapper");
+    const ctx = canvas.getContext("2d");
+
     radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
-    ctx = canvas.getContext("2d");
     centerX = Math.floor(canvas.width / 2);
     centerY = Math.floor(canvas.height / 2);
     ratio = 4 / 5;
-
     numberOfSlices = document.getElementById("slices").value;
 
-    draw();
+    draw(ctx);
 
     document.getElementById("slices").addEventListener("input", function () {
         numberOfSlices = this.value;
-        draw();
+        draw(ctx);
     });
 
     canvasWrapper.addEventListener("mousemove", function (e) {
@@ -30,12 +30,12 @@ document.addEventListener("DOMContentLoaded", function () {
         trans = (Math.PI - Math.acos(cosine)) * mult * 180 / Math.PI;
         canvas.style.transform = `rotate(${trans}deg)`;
 
-        draw();
+        draw(ctx);
     });
 });
 
-function draw() {
-    baseLength = radius * ratio + radius;
+function draw(ctx) {
+    baseLength = radius * (1 + ratio);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
