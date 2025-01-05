@@ -35,32 +35,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+function drawLine(ctx, x1, y1, dx, dy) {
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 + dx, y1 + dy);
+    ctx.stroke();
+}
+
 function draw(ctx) {
     baseLength = radius * (1 + ratio);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    ctx.moveTo(centerX, 0);
-    ctx.lineTo(centerX, baseLength);
-    ctx.stroke();
+    drawLine(ctx, centerX, 0, 0, baseLength);
     ctx.beginPath();
     ctx.arc(centerX, baseLength, radius / 50, 0, 2 * Math.PI);
     ctx.fill();
     for (let i = 0; i < numberOfSlices / 2; i++) {
         const x = solve(i / numberOfSlices, ratio);
-        ctx.moveTo(centerX, baseLength);
-        ctx.lineTo(centerX + 2 * radius * Math.sin(x), baseLength - 2 * radius * Math.cos(x));
-        ctx.stroke();
-
-        ctx.moveTo(centerX, baseLength);
-        ctx.lineTo(centerX - 2 * radius * Math.sin(x), baseLength - 2 * radius * Math.cos(x));
-        ctx.stroke();
+        drawLine(ctx, centerX, baseLength, +2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+        drawLine(ctx, centerX, baseLength, -2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
     }
-    if (numberOfSlices % 2 == 0) {
-        ctx.moveTo(centerX, baseLength);
-        ctx.lineTo(centerX, baseLength + 2 * radius);
-        ctx.stroke();
-    }
+    if (numberOfSlices % 2 == 0)
+        drawLine(ctx, centerX, baseLength, 0, 2 * radius);
 }
 
 function relAreaFraction(alpha, v) {
