@@ -59,7 +59,7 @@ function calcNewRatio(x, y) {
 function draw() {
     drawBaseLine();
     if (ratio != -1) {
-        var degg = getDegreesArray(ratio, numberOfSlices);
+        var degg = [...Array(Math.floor(numberOfSlices/2)+1).keys()].map((i) => solve(i / numberOfSlices, 1 / ratio));
     }
     else {
         var degg = [];
@@ -122,41 +122,49 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-function sineEquation(ratio, k, theta, n) {
-    return Math.sin(theta) - ratio * (n * 2 * Math.PI / k - theta);
-}
 
-function sineDerivative(ratio, theta) {
-    return Math.cos(theta) + ratio;
-}
 
-function newton(ratio, k, x0, n, presicion) {
-    x1 = x0 - sineEquation(ratio, k, x0, n, presicion) / sineDerivative(ratio, x0);
-    if (Math.abs(sineEquation(ratio, k, x1, n, presicion)) < presicion)
-        return x1;
-    return newton(ratio, k, x1, n, presicion);
-}
 
-function getDegreesArray(ratio, k) {
-    n = -1
-    if (k % 2 == 1) {
-        n = Math.floor(k / 2);
-    }
-    else {
-        n = k / 2 - 1;
-    }
-    var degrees = [];
-    degrees.push(0);
-    for (i = 1; i <= n; i++) {
-        if (i == 1)
-            x0 = Math.PI * 2 / k;
-        else
-            x0 = degrees[i - 2] + Math.PI * 2 / k;
-        degrees.push(newton(ratio, k, x0, i, 0.0001));
-    }
-    if (k % 2 == 0)
-        degrees.push(Math.PI);
-    mapper = function (theta) { return theta - Math.asin(Math.sin(theta) / Math.sqrt(1 + ratio * ratio + 2 * ratio * Math.cos(theta))) };
-    var degrees_std = degrees.map(mapper);
-    return degrees_std;
+function relAreaFraction(alpha, v) {
+    const term1 = alpha + Math.asin(v * Math.sin(alpha));
+    const numerator = v * Math.sin(term1) + term1;
+    return numerator / (2 * Math.PI);
 }
+function relAreaFractionDiff(alpha, v) {
+    const term1 = v * Math.sin(alpha);
+    const term2 = Math.sqrt(1 - term1 * term1);
+    const numerator =
+      (term2 + v * Math.cos(alpha)) *
+      (1 + v * Math.cos(alpha + Math.asin(term1)));
+    return numerator / (2 * Math.PI * term2);
+}
+function solve(funcVal, v) {
+    if (funcVal == 0.5) {
+        return Math.PI;
+    }
+    if (funcVal > 0.5) {
+        throw new Error("funcVal must be < 0.5");
+    }
+  
+    let alpha = funcVal * 2 * Math.PI;
+    while (true) {
+        const funcValCur = relAreaFraction(alpha, v);
+        if (Math.abs(funcVal - funcValCur) < 1e-4) {
+        break;
+        }
+        const grad = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v);
+        alpha += Math.min(
+            Math.abs(alpha / 2),
+            Math.max(grad, -Math.abs(alpha / 2))
+        );
+    }
+    return alpha;
+}
+  
+  
+
+
+
+
+
+
