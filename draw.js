@@ -2,6 +2,7 @@ var canvas, radius, ctx, centerX, centerY, ratio, numberOfSlices;
 
 document.addEventListener("DOMContentLoaded", function () {
     canvas = document.getElementById("canvas");
+    const canvasWrapper = document.getElementById("canvas_wrapper");
     radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
     ctx = canvas.getContext("2d");
     centerX = Math.floor(canvas.width / 2);
@@ -10,10 +11,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     numberOfSlices = document.getElementById("slices").value;
 
+    draw();
+
     document.getElementById("slices").addEventListener("input", function () {
         numberOfSlices = this.value;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         draw();
+    });
+
+    canvasWrapper.addEventListener("mousemove", function (e) {
+        const rect = canvasWrapper.getBoundingClientRect();
+        let posX = e.clientX - rect.left;
+        let posY = e.clientY - rect.top;
+
+        if (distance(posX, posY, centerX, centerY) < radius / 50) {
+            posX = centerX;
+            posY = centerY;
+        }
+
+        ratio = distance(posX, posY, centerX, centerY) / radius;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw();
+
+        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
+        canvas.style.transform = `rotate(${trans}deg)`;
     });
 });
 
@@ -39,11 +61,13 @@ function lineAtAngle(angle) {
 
 function draw() {
     drawBaseLine();
-    for (let i = 0; i <= Math.floor(numberOfSlices / 2); i++) {
+    for (let i = 0; i < numberOfSlices / 2; i++) {
         const x = solve(i / numberOfSlices, ratio);
         lineAtAngle(x);
         lineAtAngle(-x);
     }
+    if (numberOfSlices % 2 == 0)
+        lineAtAngle(Math.PI);
 }
 
 function distance(x1, y1, x2, y2) {
@@ -59,32 +83,6 @@ function calcTransformDegree(x, y) {
         return Math.PI - Math.acos(cosine);
     return -(Math.PI - Math.acos(cosine));
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    draw();
-
-    const canvasWrapper = document.getElementById("canvas_wrapper");
-    const canvas = document.getElementById("canvas");
-
-    canvasWrapper.addEventListener("mousemove", function (e) {
-        const rect = canvasWrapper.getBoundingClientRect();
-        let posX = e.clientX - rect.left;
-        let posY = e.clientY - rect.top;
-
-        if (distance(posX, posY, centerX, centerY) < radius / 50) {
-            posX = centerX;
-            posY = centerY;
-        }
-
-        ratio = distance(posX, posY, centerX, centerY) / radius;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw();
-
-        const trans = (calcTransformDegree(posX, posY) * 180) / Math.PI;
-        canvas.style.transform = `rotate(${trans}deg)`;
-    });
-});
 
 function relAreaFraction(alpha, v) {
     const term1 = alpha + Math.asin(v * Math.sin(alpha));
@@ -102,10 +100,7 @@ function relAreaFractionDiff(alpha, v) {
 }
 
 function solve(funcVal, v) {
-    if (funcVal == 0.5) {
-        return Math.PI;
-    }
-    if (funcVal > 0.5) {
+    if (funcVal >= 0.5) {
         throw new Error("funcVal must be < 0.5");
     }
 
