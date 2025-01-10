@@ -4,24 +4,6 @@
         <meta charset="utf-8">
         <title>PiZzA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <style>
-            #canvas {
-                border-radius: 50%;
-            }
-            #canvas_wrapper {
-                width:500px;
-                height:500px;
-                border-radius:50%;
-                background-image:url('pizza.png');
-                background-size:cover;
-                margin:auto;
-            }
-            .slices_wrapper {
-                margin: auto;
-                text-align: center;
-                padding-top: 20px;
-            }
-        </style>
         <!-- Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJKQE44REY"></script>
         <script>
@@ -34,10 +16,10 @@
         <!-- End Google Analytics -->
     </head>
     <body>
-        <div id="canvas_wrapper">
-            <canvas id="canvas" width="500" height="500"></canvas>
+        <div id="canvas_wrapper" style="width:500px; height:500px; border-radius:50%; background-image:url('pizza.png'); background-size:cover; margin:auto;">
+            <canvas id="canvas" style="border-radius:50%;" width="500" height="500"></canvas>
         </div>
-        <div class="slices_wrapper">
+        <div style="margin:auto; text-align:center; padding-top:20px;">
             Number of slices:<input type="number" value="8" id="slices" min="2" max="100">
         </div>
 
