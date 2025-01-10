@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "type": "rich",
+    "provider_name": "Pizza Calculator",
+    "provider_url": "https://hhdri.com/pizza/",
+    "title": "Pizza Calculator",
+    "width": 500,
+    "height": 550,
+    "html": "<iframe src=\"https://hhdri.com/pizza/pizza.html\" width=\"500\" height=\"550\" frameborder=\"0\" scrolling=\"no\" style=\"border: none; overflow: hidden;\" allowtransparency=\"true\"></iframe>"
+} 
