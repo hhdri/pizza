@@ -2,8 +2,13 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>PiZzA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <style>
+            body { margin: 0; padding: 0; }
+        </style>
+        <!-- Allow embedding -->
+        <meta http-equiv="X-Frame-Options" content="ALLOW-FROM *">
+        <meta http-equiv="Content-Security-Policy" content="frame-ancestors *">
     </head>
     <body>
         <div id="canvas_wrapper" style="width:500px; height:500px; border-radius:50%; background-image:url('pizza.png'); background-size:cover; margin:auto;">
@@ -12,7 +17,6 @@
         <div style="margin:auto; text-align:center; padding-top:20px;">
             Number of slices:<input type="number" value="8" id="slices" min="2" max="100">
         </div>
-
         <script>
             // Helper functions
             function drawLine(ctx, x1, y1, dx, dy) {
