@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <style>
+            body { margin: 0; padding: 0; }
+        </style>
+        <!-- Allow embedding -->
+        <meta http-equiv="X-Frame-Options" content="ALLOW-FROM *">
+        <meta http-equiv="Content-Security-Policy" content="frame-ancestors *">
+    </head>
+    <body>
+        <div id="canvas_wrapper" style="width:500px; height:500px; border-radius:50%; background-image:url('pizza.png'); background-size:cover; margin:auto;">
+            <canvas id="canvas" style="border-radius:50%;" width="500" height="500"></canvas>
+        </div>
+        <div style="margin:auto; text-align:center; padding-top:20px;">
+            Number of slices:<input type="number" value="8" id="slices" min="2" max="100">
+        </div>
+        <script>
+            // Helper functions
+            function drawLine(ctx, x1, y1, dx, dy) {
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x1 + dx, y1 + dy);
+                ctx.stroke();
+            }
+
+            function draw(ctx) {
+                centerYPrime = radius * (1 + ratio);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                drawLine(ctx, centerX, 0, 0, centerYPrime);
+                ctx.beginPath();
+                ctx.arc(centerX, centerYPrime, radius / 50, 0, 2 * Math.PI);
+                ctx.fill();
+                for (let i = 0; i < numberOfSlices / 2; i++) {
+                    const x = solve(i / numberOfSlices, ratio);
+                    drawLine(ctx, centerX, centerYPrime, +2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+                    drawLine(ctx, centerX, centerYPrime, -2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+                }
+                if (numberOfSlices % 2 == 0)
+                    drawLine(ctx, centerX, centerYPrime, 0, 2 * radius);
+            }
+
+            function relAreaFraction(alpha, v) {
+                const term1 = alpha + Math.asin(v * Math.sin(alpha));
+                const numerator = v * Math.sin(term1) + term1;
+                return numerator / (2 * Math.PI);
+            }
+
+            function relAreaFractionDiff(alpha, v) {
+                const term1 = v * Math.sin(alpha);
+                const term2 = Math.sqrt(1 - term1 * term1);
+                const numerator =
+                    (term2 + v * Math.cos(alpha)) *
+                    (1 + v * Math.cos(alpha + Math.asin(term1)));
+                return numerator / (2 * Math.PI * term2);
+            }
+
+            function solve(funcVal, v) {
+                let alpha = funcVal * 2 * Math.PI;
+                while (true) {
+                    const funcValCur = relAreaFraction(alpha, v);
+                    if (Math.abs(funcVal - funcValCur) < 1e-4) {
+                        break;
+                    }
+                    let step = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v)
+
+                    step = Math.max(step, -Math.abs(alpha / 2));
+                    step = Math.min(step, Math.abs(alpha / 2));
+
+                    alpha += step;
+                }
+                return alpha;
+            }
+
+            // Initialization and event listeners
+            let radius, centerX, centerY, ratio, numberOfSlices;
+            
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
+            centerX = Math.floor(canvas.width / 2);
+            centerY = Math.floor(canvas.height / 2);
+            ratio = 4 / 5;
+            numberOfSlices = document.getElementById("slices").value;
+
+            draw(ctx);
+
+            document.getElementById("slices").addEventListener("input", function () {
+                numberOfSlices = this.value;
+                draw(ctx);
+            });
+
+            document.getElementById("canvas_wrapper").addEventListener("mousemove", function (e) {
+                const rect = this.getBoundingClientRect();
+                let posX = e.clientX - rect.left;
+                let posY = e.clientY - rect.top;
+
+                ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
+
+                cosine = (centerY - posY) / Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2);
+                trans = (Math.PI - Math.acos(cosine));
+                if (posX > centerX)
+                    trans *= -1
+                canvas.style.transform = `rotate(${trans}rad)`;
+
+                draw(ctx);
+            });
+        </script>
+    </body>
+</html>
