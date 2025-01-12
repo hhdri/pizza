@@ -2,9 +2,9 @@
     "version": "1.0",
     "type": "rich",
     "provider_name": "Pizza Calculator",
-    "provider_url": "https://hhdri.com/pizza/",
+    "provider_url": "https://hhdri.github.io/pizza/",
     "title": "Pizza Calculator",
     "width": 500,
     "height": 550,
-    "html": "<div style=\"position:relative;width:100%;max-width:500px;padding-bottom:110%\"><iframe src=\"https://hhdri.com/pizza/pizza.html\" style=\"position:absolute;top:0;left:0;width:100%;height:100%;border:none;overflow:hidden\" scrolling=\"no\" allowtransparency=\"true\"></iframe></div>"
+    "html": "<div style=\"position:relative;width:100%;max-width:500px;padding-bottom:110%\"><iframe src=\"https://hhdri.github.io/pizza/pizza.html\" style=\"position:absolute;top:0;left:0;width:100%;height:100%;border:none;overflow:hidden\" scrolling=\"no\" allowtransparency=\"true\"></iframe></div>"
 } 
