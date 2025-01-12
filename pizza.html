@@ -19,17 +19,46 @@
         <meta name="twitter:description" content="Interactive pizza slice calculator" />
         <meta name="twitter:image" content="https://hhdri.com/pizza/pizza.png" />
         <style>
-            body { margin: 0; padding: 0; }
+            body { 
+                margin: 0; 
+                padding: 0; 
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+            }
+            #canvas_wrapper {
+                width: 100%;
+                max-width: 500px;
+                aspect-ratio: 1;
+                border-radius: 50%;
+                background-image: url('pizza.png');
+                background-size: cover;
+                margin: auto;
+                position: relative;
+            }
+            #canvas {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+            }
+            .controls {
+                margin: auto;
+                text-align: center;
+                padding-top: 20px;
+            }
         </style>
         <!-- Allow embedding -->
         <meta http-equiv="X-Frame-Options" content="ALLOW-FROM *">
         <meta http-equiv="Content-Security-Policy" content="frame-ancestors *">
     </head>
     <body>
-        <div id="canvas_wrapper" style="width:500px; height:500px; border-radius:50%; background-image:url('pizza.png'); background-size:cover; margin:auto;">
-            <canvas id="canvas" style="border-radius:50%;" width="500" height="500"></canvas>
+        <div id="canvas_wrapper">
+            <canvas id="canvas"></canvas>
         </div>
-        <div style="margin:auto; text-align:center; padding-top:20px;">
+        <div class="controls">
             Number of slices:<input type="number" value="8" id="slices" min="2" max="100">
         </div>
         <script>
@@ -99,13 +128,28 @@
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
 
-            radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
-            centerX = Math.floor(canvas.width / 2);
-            centerY = Math.floor(canvas.height / 2);
+            function resizeCanvas() {
+                const wrapper = document.getElementById('canvas_wrapper');
+                const width = wrapper.offsetWidth;
+                const height = wrapper.offsetHeight;
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
+                centerX = Math.floor(canvas.width / 2);
+                centerY = Math.floor(canvas.height / 2);
+                
+                draw(ctx);
+            }
+
+            // Initial setup
+            resizeCanvas();
             ratio = 4 / 5;
             numberOfSlices = document.getElementById("slices").value;
 
-            draw(ctx);
+            // Add resize listener
+            window.addEventListener('resize', resizeCanvas);
 
             document.getElementById("slices").addEventListener("input", function () {
                 numberOfSlices = this.value;

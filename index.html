@@ -16,28 +16,45 @@
         }
         .container {
             text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
         }
         h1 {
             margin-bottom: 20px;
             color: #333;
+        }
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 110%; /* Aspect ratio for height (550/500 = 1.1 = 110%) */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Pizza Calculator</h1>
-        <iframe 
-            src="pizza.html" 
-            width="500" 
-            height="550" 
-            frameborder="0" 
-            scrolling="no"
-            style="border: none; overflow: hidden;"
-            title="Pizza Calculator"
-            loading="lazy"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>
+        <div class="iframe-container">
+            <iframe 
+                src="pizza.html" 
+                frameborder="0" 
+                scrolling="no"
+                title="Pizza Calculator"
+                loading="lazy"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
     </div>
 </body>
 </html>
