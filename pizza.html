@@ -75,15 +75,18 @@
 
             function solve(funcVal, v) {
                 let alpha = funcVal * 2 * Math.PI;
-                while (true) {
+                const maxStep = alpha / 2;
+                let numIterations = 0;
+                while (numIterations < 100) {
                     const funcValCur = relAreaFraction(alpha, v);
                     if (Math.abs(funcVal - funcValCur) < 1e-4) {
                         break;
                     }
+                    numIterations++;
                     let step = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v)
 
-                    step = Math.max(step, -Math.abs(alpha / 2));
-                    step = Math.min(step, Math.abs(alpha / 2));
+                    step = Math.max(step, -maxStep);
+                    step = Math.min(step, maxStep);
 
                     alpha += step;
                 }
@@ -115,6 +118,7 @@
                 let posY = e.clientY - rect.top;
 
                 ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
+                ratio = Math.min(ratio, 0.9999999999999999);  // Prevent numerical instability
 
                 cosine = (centerY - posY) / Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2);
                 trans = (Math.PI - Math.acos(cosine));
