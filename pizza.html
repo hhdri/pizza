@@ -22,16 +22,12 @@
             body { 
                 margin: 0; 
                 padding: 0; 
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                aspect-ratio: 1;
+                width: 100%;  /* Take full width of parent container */
             }
+
             #canvas_wrapper {
-                width: 100%;
-                aspect-ratio: 1;
+                width: 100%;  /* Take full width of body */
+                aspect-ratio: 1;  /* Make it square */
                 border-radius: 50%;
                 background-image: url('pizza.png');
                 background-size: cover;
