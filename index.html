@@ -6,55 +6,146 @@
     <title>Pizza Calculator Demo</title>
     <style>
         body {
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
+            background-color: #dedcd7;
         }
-        .container {
-            text-align: center;
+
+        #canvas_wrapper {
             width: 100%;
-            max-width: 800px;
-            padding: 0 20px;
-        }
-        h1 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .iframe-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 110%; /* Aspect ratio for height (550/500 = 1.1 = 110%) */
             max-width: 500px;
-            margin: 0 auto;
+            aspect-ratio: 1;
+            background-image: url('pizza.png');
+            border-radius: 50%; /* cut the crust a bit to make it look better */
+            background-size: cover; /* This ensures the image covers the entire area */
+            margin: auto;
+            overflow: hidden;  /* This will clip anything outside the border radius */
         }
-        .iframe-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+        .controls {
+            text-align: center;
+            padding-top: 40px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Pizza Calculator</h1>
-        <div class="iframe-container">
-            <iframe 
-                src="pizza.html" 
-                frameborder="0" 
-                scrolling="no"
-                title="Pizza Calculator"
-                loading="lazy"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen>
-            </iframe>
-        </div>
+    <div id="canvas_wrapper">
+        <canvas id="canvas"></canvas>
     </div>
+    <div class="controls">
+        Number of slices: <input type="number" value="8" id="slices" min="2" max="100">
+    </div>
+    <script>
+        // Helper functions
+        function drawLine(ctx, x1, y1, dx, dy) {
+            ctx.setLineDash([7, 3]); // Creates dashes of 5px length with 5px gaps
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 + dx, y1 + dy);
+            ctx.stroke();
+        }
+
+        function draw(ctx) {
+            centerYPrime = radius * (1 + ratio);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            drawLine(ctx, centerX, 0, 0, centerYPrime);
+            ctx.beginPath();
+            ctx.arc(centerX, centerYPrime, radius / 50, 0, 2 * Math.PI);
+            ctx.fill();
+            for (let i = 1; i < numberOfSlices / 2; i++) {
+                const x = solve(i / numberOfSlices, ratio);
+                drawLine(ctx, centerX, centerYPrime, +2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+                drawLine(ctx, centerX, centerYPrime, -2 * radius * Math.sin(x), -2 * radius * Math.cos(x));
+            }
+            if (numberOfSlices % 2 == 0)
+                drawLine(ctx, centerX, centerYPrime, 0, 2 * radius);
+        }
+
+        function relAreaFraction(alpha, v) {
+            const term1 = alpha + Math.asin(v * Math.sin(alpha));
+            const numerator = v * Math.sin(term1) + term1;
+            return numerator / (2 * Math.PI);
+        }
+
+        function relAreaFractionDiff(alpha, v) {
+            const term1 = v * Math.sin(alpha);
+            const term2 = Math.sqrt(1 - term1 * term1);
+            const numerator =
+                (term2 + v * Math.cos(alpha)) *
+                (1 + v * Math.cos(alpha + Math.asin(term1)));
+            return numerator / (2 * Math.PI * term2);
+        }
+
+        function solve(funcVal, v) {
+            let alpha = funcVal * 2 * Math.PI;
+            const maxStep = alpha / 2;
+            let numIterations = 0;
+            while (numIterations < 100) {
+                const funcValCur = relAreaFraction(alpha, v);
+                if (Math.abs(funcVal - funcValCur) < 1e-4) {
+                    break;
+                }
+                numIterations++;
+                let step = -(funcValCur - funcVal) / relAreaFractionDiff(alpha, v)
+
+                step = Math.max(step, -maxStep);
+                step = Math.min(step, maxStep);
+
+                alpha += step;
+            }
+            return alpha;
+        }
+
+        // Initialization and event listeners
+        let radius, centerX, centerY, ratio, numberOfSlices;
+        
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas_wrapper');
+            const width = wrapper.offsetWidth;
+            const height = wrapper.offsetHeight;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            radius = Math.floor(Math.min(canvas.width, canvas.height) / 2);
+            centerX = Math.floor(canvas.width / 2);
+            centerY = Math.floor(canvas.height / 2);
+            
+            draw(ctx);
+        }
+
+        // Initial setup
+        ratio = 1 / 2;
+        numberOfSlices = document.getElementById("slices").value;
+        canvas.style.transform = "rotate(0.9rad)";
+        resizeCanvas();
+
+        // Add resize listener
+        window.addEventListener('resize', resizeCanvas);
+
+        document.getElementById("slices").addEventListener("input", function () {
+            numberOfSlices = this.value;
+            draw(ctx);
+        });
+
+        document.getElementById("canvas_wrapper").addEventListener("mousemove", function (e) {
+            const rect = this.getBoundingClientRect();
+            let posX = e.clientX - rect.left;
+            let posY = e.clientY - rect.top;
+
+            ratio = Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2) / radius;
+            ratio = Math.min(ratio, 0.9999999999999999);  // Prevent numerical instability
+
+            cosine = (centerY - posY) / Math.sqrt((posX - centerX) ** 2 + (posY - centerY) ** 2);
+            trans = (Math.PI - Math.acos(cosine));
+            if (posX > centerX)
+                trans *= -1
+            canvas.style.transform = `rotate(${trans}rad)`;
+
+            draw(ctx);
+        });
+    </script>
 </body>
 </html>
